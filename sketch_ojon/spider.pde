@@ -4,17 +4,13 @@ class Angel {
   float numFeet = 10;
   
   PVector pos;
-  PVector lastPos;
+  PVector lastPos = new PVector(0,0,0);
   PVector dest;
   PVector vel;
   PVector acc;
   PVector eyePos;
-  float eyeAngle = 0;
-  float eyeLastPos;
-  float eyeNextPos;
   
   float size;
-  float eyesize;
   float time = 0;
   float maxRest = 5;
   float moveTime = 0;
@@ -29,32 +25,26 @@ class Angel {
 
    Angel(float _x, float _y, float _angle) {
      pos = new PVector(_x, _y);
-     eyePos = pos.copy();
-     lastPos = pos.copy();  
+     lastPos.x = pos.x;  
+     lastPos.y = pos.y;  
      size = 50;
-     eyesize = size / 4;
-     eyePos = new PVector(pos.x + (cos(eyeAngle) * 50), pos.y + (sin(eyeAngle) * 50));
      
      float step = _angle/numFeet;   
      for(int i=0; i<numFeet; i++) {
-       float vel = random(0.005, 0.007);
-       float lenvel = random(0.1, 0.5);
        wings.add(new Wing(step * i, size));
      }
    }
    
    void move() {
      
-     lastPos = pos.copy();
+     lastPos.x = pos.x;  
+     lastPos.y = pos.y;  
      float a = random(-360, 360);
      dest = PVector.fromAngle(radians(a));
      dest.normalize();
      float moveDistance = random(50, 150);
      dest.mult(moveDistance);
      moveDuration = int(dest.mag());
-     
-     eyeLastPos = eyeAngle;
-     eyeNextPos = random(-180, 180);
    
      PVector nextPos = PVector.add(pos, dest);
      if(nextPos.x > width) dest.x = -abs(dest.x);
@@ -71,10 +61,6 @@ class Angel {
       if(!stopped) {
         pos.x = Penner.easeInOutBack(moveTime, lastPos.x, dest.x, moveDuration);
         pos.y = Penner.easeInOutBack(moveTime, lastPos.y, dest.y, moveDuration);
-        
-        eyeAngle = Penner.easeInOutBack(moveTime, eyeLastPos, eyeNextPos, moveDuration);
-        eyePos.x = (cos(radians(eyeAngle)) * 25);
-        eyePos.y = (sin(radians(eyeAngle)) * 25);
         
         time+=0.001;
         moveTime++;
@@ -101,9 +87,6 @@ class Angel {
      fill(0, 150, 255, 65);
      noStroke();
      ellipse(0, 0, size-15, size-15);
-     
-     fill(0, 150, 255, 65);
-     ellipse(eyePos.x, eyePos.y, eyesize, eyesize);  
      
      popMatrix();
    }
